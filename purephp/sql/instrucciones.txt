@@ -1,0 +1,18 @@
+-----------------------CREACIÓN------------------------------------
+
+1.Se crear la tabla viewUser, inserta los datos en la tabla viewUser
+2.crea la tabla user, la cual tiene de clave foranea viewUser, inserta los datos en la tabla user
+3.Crea la tabla multimediatype e inserta los datos
+4.Crea la tabla multimedia e inserta los datos
+5.Crea la tabla gamesUsers e inserta los datos
+6.crea la tabla game e inserta los datos
+
+
+--------------------------ELIMINACION------------------------------------
+
+Drop table gamesUsers;
+Drop table games;
+Drop table multimedia;
+Drop table users;
+Drop table multimediaType;
+Drop table viewsUsers;
