@@ -1,12 +1,12 @@
 <?php 
 
-
+$mensaje="";
+$path = "";
 if (isset($_POST['submit'])){
     if(isset($_POST['broken'])) $broken=1;
     else  $broken=0;
     if(isset($_POST['iGoIt'])) $iGoIt=1;
     else  $iGoIt=0;
-
     $game=new Game($_POST['id']);
     $game->setTitle($_POST['title']);
     $game->setCover($_POST['cover']);
@@ -23,10 +23,6 @@ if (isset($_POST['submit'])){
     $game->setControl($_POST['control']);
     $game->setPlayers($_POST['players']);
     $game->setLanguages($_POST['languages']);
-    //$game->setFile($_POST['file']);
-    //$game->setScreenshot($_POST['screenshot']);
-    //$game->setVideo($_POST['video']);
-    //$game->setWeb($_POST['web']);
     $game->setIGoIt($iGoIt);
     $game->setBroken($broken);
     $game->setObservations($_POST['observations']);
@@ -38,6 +34,127 @@ if (isset($_POST['submit'])){
         echo "Update could not be completed";  
     }
     die();
+}else if (isset($_POST['submitFileDelete'])){
+    $path =FileGameRepository::getPath($idFileGame);
+    unlink($path);
+    $error=FileGameRepository::delete($idFileGame);
+    if (!$error) $mensaje="File insert.";
+    else $mensaje="Error inserting";
+    header('Location: '.PATHSERVER."game/update/".$idGame);
+    if ( PRODUCTION==1 ) echo "<script type='text/javascript'>location.href='".PATHSERVER."game/update/".$idGame."</script>";
+}else if(isset($_POST['submitInsertFile'])){
+    $fileName = $_FILES['archivo']['name']; 
+    $tipo_archivo = $_FILES['archivo']['type']; 
+    $tamano_archivo = $_FILES['archivo']['size']; 
+    //txt: text/plain
+    //cas: application/octet-stream
+    if (!(strpos($tipo_archivo, "plain") || strpos($tipo_archivo, "pdf") || strpos($tipo_archivo, "doc") || strpos($tipo_archivo, "docx") || strpos($tipo_archivo, "octet-stream") || strpos($tipo_archivo, "rom") || strpos($tipo_archivo, "dsk") || strpos($tipo_archivo, "tsx") || $tamano_archivo > 900000)) 
+    {
+        echo "<h1>".$tipo_archivo."</h1>";
+        $fileName="sinimagen.png";
+        echo "El archivo no tiene el formato o el tam&ntilde;o correcto, solo se aceptan, pdf, txt, doc y docx menores de 90Mb.<br />";
+    }else { 
+        $fileName=Util::formatearTexto($fileName);
+        if (!file_exists("media")) {
+            mkdir("media", 0777, true);
+        }
+        if (!file_exists("media/users")) {
+            mkdir("media/users", 0777, true);
+        }
+        if (!file_exists("media/users/user".$_SESSION['idusuario'])) {
+            mkdir("media/users/user".$_SESSION['idusuario'], 0777, true);
+        }
+        $path="media/users/user".$_SESSION['idusuario']."/".$fileName;
+        move_uploaded_file($_FILES['archivo']['tmp_name'], $path);
+        $fileGame=new FileGame(0);
+        $fileGame->setName($fileName);
+        $fileGame->setPath($path);
+        //La variable $idGame aparece en el index
+        $fileGame->setGame($idGame);
+        $error=FileGameRepository::insert($fileGame);
+        if (!$error) $mensaje="File ".$fileName." insert.";
+        else $mensaje="Error inserting";
+        header('Location: '.PATHSERVER."game/update/".$idGame);
+        echo "<script type='text/javascript'>location.href='".PATHSERVER."game/update/".$idGame."'</script>";
+    } 			
+    
+}else if (isset($_POST['submitDeleteScreenShot'])){
+    $error="";
+    $path =ScreenShotGameRepository::getPath($idScreenShotGame);
+    if (!unlink($path)) {
+        echo ("$path cannot be deleted due to an error");
+    }
+    else {
+        echo ("$path has been deleted");
+    }
+    $error=ScreenShotGameRepository::delete($idScreenShotGame);
+    if (!$error) $mensaje="File insert.";
+    else $mensaje="Error inserting";
+    header('Location: '.PATHSERVER."game/update/".$idGame);
+    if ( PRODUCTION==1 ) echo "<script type='text/javascript'>location.href='".PATHSERVER."game/update/".$idGame."</script>";  
+}else if(isset($_POST['submitInsertScreenShot'])){
+    $fileName = $_FILES['archivo']['name']; 
+    $tipo_archivo = $_FILES['archivo']['type']; 
+    $tamano_archivo = $_FILES['archivo']['size']; 
+    if (!(strpos($tipo_archivo, "jpg") || strpos($tipo_archivo, "png") || strpos($tipo_archivo, "jpeg") || strpos($tipo_archivo, "bmp") || $tamano_archivo > 900000)) 
+    {
+        $fileName="sinimagen.png";
+        echo "El archivo no tiene el formato o el tam&ntilde;o correcto, solo se aceptan, jpg, jpeg, png y bmp menores de 90Mb.<br />";
+    }else
+    { 
+        $fileName=Util::formatearTexto($fileName);
+        if (!file_exists("media")) {
+            mkdir("media", 0777, true);
+        }
+        if (!file_exists("media/users")) {
+            mkdir("media/users", 0777, true);
+        }
+        if (!file_exists("media/users/user".$_SESSION['idusuario'])) {
+            mkdir("media/users/user".$_SESSION['idusuario'], 0777, true);
+        }
+        $path="media/users/user".$_SESSION['idusuario']."/".$fileName;
+        move_uploaded_file($_FILES['archivo']['tmp_name'], $path);
+        $fileGame=new FileGame(0);
+        $fileGame->setName($fileName);
+        $fileGame->setPath($path);
+        $fileGame->setGame($idGame);
+        $error=ScreenShotGameRepository::insert($fileGame);
+        if (!$error) $mensaje="File ".$fileName." insert.";
+        else $mensaje="Error inserting";
+        header('Location: '.PATHSERVER."game/update/".$idGame);
+        echo "<script type='text/javascript'>location.href='".PATHSERVER."game/update/".$idGame."'</script>";
+    } 	           
+    
+}else if (isset($_POST['submitDeleteVideo'])){
+    $error=VideoGameRepository::delete($idVideoGame);
+    if (!$error) $mensaje="File insert.";
+    else $mensaje="Error inserting";
+    header('Location: '.PATHSERVER."game/update/".$idGame);
+    if ( PRODUCTION==1 ) echo "<script type='text/javascript'>location.href='".PATHSERVER."game/update/".$idGame."'</script>";       
+}else if(isset($_POST['submitInsertVideo'])){
+    $videoGame=new VideoGame(0);
+    $videoGame->setText($text);
+    $videoGame->setGame($idGame);
+    $error=VideoGameRepository::insert($videoGame);
+    if (!$error) $mensaje="Video ".$videoGame->getText()." insert.";
+    else $mensaje="Error inserting";
+    header('Location: '.PATHSERVER."game/update/".$idGame);
+    if ( PRODUCTION==1 ) echo "<script type='text/javascript'>location.href='".PATHSERVER."game/update/".$idGame."'</script>";
+}else if (isset($_POST['submitDeleteWeb'])){
+    $error=WebGameRepository::delete($idWebGame);
+    if (!$error) $mensaje="File insert.";
+    else $mensaje="Error inserting";
+    header('Location: '.PATHSERVER."game/update/".$idGame);
+    if ( PRODUCTION==1 ) echo "<script type='text/javascript'>location.href='".PATHSERVER."game/update/".$idGame."</script>";
+}else if(isset($_POST['submitInsertWeb'])){
+    $webGame=new WebGame(0);
+    $webGame->setText($text);
+    $webGame->setGame($idGame);
+    $error=WebGameRepository::insert($webGame);
+    if (!$error) $mensaje="Web ".$webGame->getText()." insert.";
+    else $mensaje="Error inserting";
+    header('Location: '.PATHSERVER."game/update/".$idGame);
+    if ( PRODUCTION==1 ) echo "<script type='text/javascript'>location.href='".PATHSERVER."game/update/".$idGame."'</script>";    
 }
 
 if (empty($idGame)) {
@@ -67,8 +184,12 @@ include_once("./views/templates/document-start.php");
         </div>
     </div>
 </div>
-<!-- Patrones: para campos con números: pattern='[0-9]{1,10000}'-->
+
 <h3>Update game <?php echo GameUserRepository::getTitleById($idGame); ?></h3>
+<!----------------------------------------------------------------------------------------------------------------------->
+<!------------------------------------------------ FORMULARIO ACTUALIZAR------------------------------------------------->
+<!----------------------------------------------------------------------------------------------------------------------->
+<!-- Patrones: para campos con números: pattern='[0-9]{1,10000}'-->
 <form method=post action='<?php echo PATHSERVER."game/update"?>' class='form-horizontal background-pink' enctype='multipart/form-data'>
     <div class='form-group m-4' >
         <label for='title' class='control-label '>title:</label>
@@ -76,6 +197,9 @@ include_once("./views/templates/document-start.php");
             <input type='text' class='form-control' name='title' id='title' size=80 title='title is required' value='<?php echo $game->getTitle(); ?>' required  />
         </div>
     </div> 
+
+
+
 
 
 
@@ -150,9 +274,6 @@ include_once("./views/templates/document-start.php");
             <input type='text' class='form-control' name='system' id='system' title='system' value='<?php echo $game->getSystem(); ?>' required />
         </div>
     </div> 
-
-
-
     <div class='form-group m-4' >
         <label for='publisher' class='control-label '>Publisher: </label> 
         <div class='col'>
@@ -242,9 +363,6 @@ include_once("./views/templates/document-start.php");
             <textarea type='text' class='form-control' name='observations' id='observations' title='observations' rows='3' cols='60' ><?php echo $game->getObservations(); ?></textarea>
         </div>
     </div>   
-
-
-
     <div class='form-group m-4' > 
         <div class='col col-md-offset-2' >
             <input type="hidden" name="id" id="id" value='<?php echo $idGame ?>' />
@@ -253,9 +371,10 @@ include_once("./views/templates/document-start.php");
             <a href="<?php echo PATHSERVER; ?>game/delete/<?php echo $idGame; ?>" class="btn btn-danger">   Delete   </a>
         </div>
     </div> 
-
 </form>
-
+<!----------------------------------------------------------------------------------------------------------------------->
+<!---------------------------------------FINAL DEL FORMULARIO ACTUALIZAR------------------------------------------------->
+<!----------------------------------------------------------------------------------------------------------------------->
 
 
 
@@ -274,15 +393,15 @@ include_once("./views/templates/document-start.php");
 <div class='form-group m-4' >  
     <label for='archivo' class='control-label '><h3>file (rom, cas, dsk, tsx, txt, doc, docx, pdf): </h3></label> 
     <div class='col'>
-        <form class="form-horizontal" action="<?php echo PATHSERVER."game/insertFile"?>" method="post" enctype="multipart/form-data">
+        <form class="form-horizontal" action="<?php echo PATHSERVER."game/update"?>" method="post" enctype="multipart/form-data">
             <input type='file' class="form-control" name='archivo' id='archivo' onChange='ver(form.file.value)' required />
             <input type="hidden" name="idGame" value="<?php echo $game->getId() ?>" />
-            <input type="submit" name="submit" class="button btn-primary btn-large" value="Add file" />
+            <input type="submit" name="submitInsertFile" class="button btn-primary btn-large" value="Add file" />
         </form>
         <?php $filesGames=FileGameRepository::getAllByGame($game->getId());
         foreach ($filesGames as $posicion=>$file){
             ?>
-            <form class='form-horizontal' action='<?php echo PATHSERVER; ?>game/deleteFile' method='post'>
+            <form class='form-horizontal' action='<?php echo PATHSERVER; ?>game/update' method='post'>
                 <input type='hidden' name='idGame' value='<?php echo $game->getId(); ?>' />
                 <input type='hidden' name='idFileGame' value='<?php echo $file->getId(); ?>' />
                 <?php
@@ -292,7 +411,7 @@ include_once("./views/templates/document-start.php");
                     echo "<a href='".$file->getPath()."' >".$file->getName()."</a>";
                 }
                 ?>
-                <input type='submit' name='submit' class='button btn-danger' value='X' />
+                <input type='submit' name='submitFileDelete' class='button btn-danger' value='X' />
             </form>
             <?php
         }
@@ -304,15 +423,15 @@ include_once("./views/templates/document-start.php");
 <div class='form-group m-4' >  
     <label for='archivo' class='control-label '><h3>screenshot (png, jpg, jpeg, bmp): </h3></label> 
     <div class='col'>
-        <form class="form-horizontal" action="<?php echo PATHSERVER."game/insertScreenShot"?>" method="post" enctype="multipart/form-data">
+        <form class="form-horizontal" action="<?php echo PATHSERVER."game/update"?>" method="post" enctype="multipart/form-data">
             <input type='file' class="form-control" name='archivo' id='archivo' onChange='ver(form.file.value)' required />
             <input type="hidden" name="idGame" value="<?php echo $game->getId() ?>" />
-            <input type="submit" name="submit" class="button btn-primary btn-large" value="Add screenshot" />
+            <input type="submit" name="submitInsertScreenShot" class="button btn-primary btn-large" value="Add screenshot" />
         </form>
         <?php $screenShotsGames=ScreenShotGameRepository::getAllByGame($game->getId());
         foreach ($screenShotsGames as $posicion=>$screenShot){
             ?>
-            <form class='form-horizontal flex-container' action='<?php echo PATHSERVER; ?>game/deleteScreenShot' method='post'>
+            <form class='form-horizontal flex-container' action='<?php echo PATHSERVER; ?>game/update' method='post'>
                 <input type='hidden' name='idGame' value='<?php echo $game->getId(); ?>' />
                 <input type='hidden' name='idScreenShotGame' value='<?php echo $screenShot->getId(); ?>' />
                 <?php
@@ -326,7 +445,7 @@ include_once("./views/templates/document-start.php");
                     echo "</a>";
                 }
                 ?>
-                <input type='submit' name='submit' class='button btn-danger' value='X' />
+                <input type='submit' name='submitDeleteScreenShot' class='button btn-danger' value='X' />
             </form>
             <?php
         }
@@ -338,19 +457,19 @@ include_once("./views/templates/document-start.php");
 <div class='form-group m-4' >  
     <label for='text' class='control-label '><h3>URL video:</h3> </label> 
     <div class='col'>
-        <form class="form-horizontal" name="addVideoForm" id="addVideoForm" action="<?php echo PATHSERVER."game/insertVideo"?>" method="post">
+        <form class="form-horizontal" action="<?php echo PATHSERVER."game/update"?>" method="post">
             <input type="text" class="form-control"  name="text" id="text" title='Se necesita un texto' required /><br>
             <input type="hidden" name="idGame" value="<?php echo $game->getId() ?>" />
-            <input type="submit" name="submit" class="button btn-primary btn-large" value="Add Video" />
+            <input type="submit" name="submitInsertVideo" class="button btn-primary btn-large" value="Add Video" />
         </form>
         <?php $VideosGames=VideoGameRepository::getAllByGame($game->getId());
         foreach ($VideosGames as $posicion=>$video){
             ?>
-            <form class='form-horizontal' action='<?php echo PATHSERVER; ?>game/deleteVideo' method='post'>
+            <form class='form-horizontal' action='<?php echo PATHSERVER; ?>game/update' method='post'>
                 <input type='hidden' name='idGame' value='<?php echo $game->getId(); ?>' />
                 <input type='hidden' name='idVideoGame' value='<?php echo $video->getId(); ?>' />
                 <a href="<?php echo $video->getText(); ?>" target="_blanck"><?php echo $video->getText(); ?></a>
-                <input type='submit' name='submit' class='button btn-danger' value='X' />
+                <input type='submit' name='submitDeleteVideo' class='button btn-danger' value='X' />
             </form>
             <?php
         }
@@ -362,19 +481,19 @@ include_once("./views/templates/document-start.php");
 <div class='form-group m-4' >  
     <label for='text' class='control-label '><h3>URL web:</h3> </label> 
     <div class='col'>
-        <form class="form-horizontal" action="<?php echo PATHSERVER."game/insertWeb"?>" method="post">
+        <form class="form-horizontal" action="<?php echo PATHSERVER."game/update"?>" method="post">
             <input type="text" class="form-control"  name="text" id="text" title='Se necesita un texto' required /><br>
             <input type="hidden" name="idGame" value="<?php echo $game->getId() ?>" />
-            <input type="submit" name="submit" class="button btn-primary btn-large" value="Add web" />
+            <input type="submit" name="submitInsertWeb" class="button btn-primary btn-large" value="Add web" />
         </form>
         <?php $websGames=WebGameRepository::getAllByGame($game->getId());
         foreach ($websGames as $posicion=>$web){
             ?>
-            <form class='form-horizontal' action='<?php echo PATHSERVER; ?>game/deleteWeb' method='post'>
+            <form class='form-horizontal' action='<?php echo PATHSERVER; ?>game/update' method='post'>
                 <input type='hidden' name='idGame' value='<?php echo $game->getId(); ?>' />
                 <input type='hidden' name='idWebGame' value='<?php echo $web->getId(); ?>' />
                 <a href="<?php echo $web->getText(); ?>" target="_blanck"><?php echo $web->getText(); ?></a>
-                <input type='submit' name='submit' class='button btn-danger' value='X' />
+                <input type='submit' name='submitDeleteWeb' class='button btn-danger' value='X' />
             </form>
             <?php
         }

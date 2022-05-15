@@ -5,6 +5,10 @@ class GameUserRepository{
         $games=array();
         $basededatos= new MysqliClient();
         $basededatos->conectar_mysql();
+        if (!$basededatos->checkExitsGamesUsersTable()){
+            echo "gamesUsers table not exists";
+            die();
+        }
         $consulta  = "SELECT * FROM gamesUsers WHERE user='".$user."' ORDER BY title limit ".$start .", ".$end." ";
         $resultado=$basededatos->ejecutar_sql($consulta);
         while ($linea = mysqli_fetch_array($resultado)) 
@@ -44,6 +48,10 @@ class GameUserRepository{
         $games=array();
         $basededatos= new MysqliClient();
         $basededatos->conectar_mysql();
+        if (!$basededatos->checkExitsGamesUsersTable()){
+            echo "gamesUsers table not exists";
+            die();
+        }
         $consulta  = "SELECT * FROM gamesUsers WHERE user='".$user."' AND system='".$system."' ORDER BY title limit ".$start .", ".$end." ";
         $resultado=$basededatos->ejecutar_sql($consulta);
         while ($linea = mysqli_fetch_array($resultado)) 
@@ -80,6 +88,10 @@ class GameUserRepository{
         $game=null;
         $basededatos= new MysqliClient();
         $basededatos->conectar_mysql();
+        if (!$basededatos->checkExitsGamesUsersTable()){
+            echo "gamesUsers table not exists";
+            die();
+        }
         $consulta  = "SELECT * FROM gamesUsers WHERE user='$user' AND id='$idGame' ";
         $resultado=$basededatos->ejecutar_sql($consulta);
         while ($linea = mysqli_fetch_array($resultado)) 
@@ -115,6 +127,10 @@ class GameUserRepository{
         $game=null;
         $basededatos= new MysqliClient();
         $basededatos->conectar_mysql();
+        if (!$basededatos->checkExitsGamesUsersTable()){
+            echo "gamesUsers table not exists";
+            die();
+        }
         $consulta  = "SELECT * FROM gamesUsers WHERE id='$idGame' LIMIT 1 ";
         $resultado=$basededatos->ejecutar_sql($consulta);
         while ($linea = mysqli_fetch_array($resultado)) 
@@ -153,6 +169,10 @@ class GameUserRepository{
         $games=array();
         $basededatos= new MysqliClient();
         $basededatos->conectar_mysql();
+        if (!$basededatos->checkExitsGamesUsersTable()){
+            echo "gamesUsers table not exists";
+            die();
+        }
         $consulta  = "SELECT * FROM gamesUsers WHERE user='".$idUser."' AND title LIKE '%".$search."%' LIMIT 100";
         $resultado=$basededatos->ejecutar_sql($consulta);
         while ($linea = mysqli_fetch_array($resultado)) 
@@ -192,8 +212,13 @@ class GameUserRepository{
         $games=array();
         $basededatos= new MysqliClient();
         $basededatos->conectar_mysql();
+        if (!$basededatos->checkExitsGamesUsersTable()){
+            echo "gamesUsers table not exists";
+            die();
+        }
         $consulta  = "SELECT * FROM gamesUsers WHERE user='".$idUser."' ORDER BY title LIMIT ".$start .", ".$end." ";
         $resultado=$basededatos->ejecutar_sql($consulta);
+        if ($resultado==null) return null;
         while ($linea = mysqli_fetch_array($resultado)) 
         {
             $game=new Game($linea['id']);
@@ -270,6 +295,10 @@ class GameUserRepository{
     public static function getTitleById($id){
         $basededatos= new MysqliClient();
         $basededatos->conectar_mysql();
+        if (!$basededatos->checkExitsGamesUsersTable()){
+            echo "gamesUsers table not exists";
+            die();
+        }
         $consulta  = "SELECT title FROM gamesUsers WHERE id='".$id."' ";
         $resultado=$basededatos->ejecutar_sql($consulta);
         while ($linea = mysqli_fetch_array($resultado)) 
@@ -285,6 +314,10 @@ class GameUserRepository{
         $systems=array();
         $basededatos= new MysqliClient();
         $basededatos->conectar_mysql();
+        if (!$basededatos->checkExitsGamesUsersTable()){
+            echo "gamesUsers table not exists";
+            die();
+        }
         $consulta  = "SELECT DISTINCT system FROM gamesUsers WHERE user='".$idUser."'";
         $resultado=$basededatos->ejecutar_sql($consulta);
         while ($linea = mysqli_fetch_array($resultado)) 
@@ -300,6 +333,10 @@ class GameUserRepository{
         $systems=array();
         $basededatos= new MysqliClient();
         $basededatos->conectar_mysql();
+        if (!$basededatos->checkExitsGamesUsersTable()){
+            echo "gamesUsers table not exists";
+            die();
+        }
         $consulta  = "SELECT DISTINCT publisher FROM gamesUsers WHERE user='".$idUser."' ORDER BY publisher";
         $resultado=$basededatos->ejecutar_sql($consulta);
         while ($linea = mysqli_fetch_array($resultado)) 
@@ -316,6 +353,10 @@ class GameUserRepository{
     public static function insert($game,$idUser){
 		$bd= new MysqliClient();
 		$bd->conectar_mysql();
+        if (!$bd->checkExitsGamesUsersTable()){
+            echo "gamesUsers table not exists";
+            die();
+        }
         $sql="INSERT INTO gamesUsers VALUES ( '', '".$game->getTitle()."', '".$game->getCover()."', '".$game->getInstructions()."', '".$game->getCountry()."', '".$game->getPublisher()."', '".$game->getDeveloper()."', '".$game->getYear()."', '".$game->getFormat()."', '".$game->getGenre()."', '".$game->getSystem()."', '".$game->getProgramming()."', '".$game->getSound()."', '".$game->getControl()."', '".$game->getPlayers()."', '".$game->getLanguages()."', '1', '1', '1', '1', '".$game->getIGoIt()."', '".$game->getBroken()."' , '".$game->getObservations()."', '".$idUser."') ";
         //Escapamos los signos especiales para que no de error
         //$bd->ejecutar_sql(addslashes($sql));
@@ -326,6 +367,10 @@ class GameUserRepository{
     public static function update($game){
         $bd= new MysqliClient();
         $bd->conectar_mysql();
+        if (!$bd->checkExitsGamesUsersTable()){
+            echo "gamesUsers table not exists";
+            die();
+        }
         //echo "<3>title='".$game->getTitle()."', cover='".$game->getCover()."', instructions='".$game->getInstructions()."', country='".$game->getCountry()."', publisher='".$game->getPublisher()."', developer='".$game->getDeveloper()."', year='".$game->getYear()."', format='".$game->getFormat()."', genre='".$game->getGenre()."', system='".$game->getSystem()."', programming='".$game->getProgramming()."', sound='".$game->getSound()."', control='".$game->getControl()."', players='".$game->getPlayers()."', languages='".$game->getLanguages()."', file='1', screenshot='1', video='1', web='1', iGoIt='".$game->getIGoIt()."' , broken='".$game->getBroken()."', observations='".$game->getObservations()."' where id='".$game->getId()."'";
         //update gamesUsers set title='tawara', cover='1', instructions='instrucciones', country='', publisher='ASCII', developer='ASCII', year='1986', format='cassette', genre='platform', system='NSX', programming='', sound='', control='', players='', languages='', file='1', screenshot='1', video='1', web='1', iGoIt='0' , broken='0', observations='' where id='19';
         $sql="update gamesUsers set title='".$game->getTitle()."', cover='".$game->getCover()."', instructions='".$game->getInstructions()."', country='".$game->getCountry()."', publisher='".$game->getPublisher()."', developer='".$game->getDeveloper()."', year='".$game->getYear()."', format='".$game->getFormat()."', genre='".$game->getGenre()."', system='".$game->getSystem()."', programming='".$game->getProgramming()."', sound='".$game->getSound()."', control='".$game->getControl()."', players='".$game->getPlayers()."', languages='".$game->getLanguages()."', file='1', screenshot='1', video='1', web='1', iGoIt='".$game->getIGoIt()."' , broken='".$game->getBroken()."', observations='".$game->getObservations()."' where id='".$game->getId()."'";
@@ -339,6 +384,10 @@ class GameUserRepository{
 	public static function setFileToGame($idGame, $idFile){
         $bd= new MysqliClient();
         $bd->conectar_mysql();
+        if (!$bd->checkExitsGamesUsersTable()){
+            echo "gamesUsers table not exists";
+            die();
+        }
         $sql="update gamesUsers set file='".$idFile."' where id='".$idGame."'";
         $bd->ejecutar_sql($sql);
         $bd->desconectar();
@@ -346,6 +395,10 @@ class GameUserRepository{
     public static function setScreenShootToGame($idGame, $idScreenShot){
         $bd= new MysqliClient();
         $bd->conectar_mysql();
+        if (!$bd->checkExitsGamesUsersTable()){
+            echo "gamesUsers table not exists";
+            die();
+        }
         $sql="update gamesUsers set screenshot='".$idScreenShot."' where id='".$idGame."'";
         $bd->ejecutar_sql($sql);
         $bd->desconectar();
@@ -353,6 +406,10 @@ class GameUserRepository{
     public static function setVideoToGame($idGame, $idVideo){
         $bd= new MysqliClient();
         $bd->conectar_mysql();
+        if (!$bd->checkExitsGamesUsersTable()){
+            echo "gamesUsers table not exists";
+            die();
+        }
         $sql="update gamesUsers set video='".$idVideo."' where id='".$idGame."'";
         $bd->ejecutar_sql($sql);
         $bd->desconectar();
@@ -360,6 +417,10 @@ class GameUserRepository{
     public static function setWebToGame($idGame, $idWeb){
         $bd= new MysqliClient();
         $bd->conectar_mysql();
+        if (!$bd->checkExitsGamesUsersTable()){
+            echo "gamesUsers table not exists";
+            die();
+        }
         $sql="update gamesUsers set web='".$idWeb."' where id='".$idGame."'";
         $bd->ejecutar_sql($sql);
         $bd->desconectar();
@@ -368,6 +429,10 @@ class GameUserRepository{
     public static function delete($id){
         $bd= new MysqliClient();
         $bd->conectar_mysql();
+        if (!$bd->checkExitsGamesUsersTable()){
+            echo "gamesUsers table not exists";
+            die();
+        }
         $sql="DELETE FROM gamesUsers WHERE id='".$id."' LIMIT 1";
         $bd->ejecutar_sql($sql);
         $bd->desconectar();

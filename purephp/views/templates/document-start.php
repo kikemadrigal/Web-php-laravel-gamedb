@@ -31,7 +31,7 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link active" href="<?php echo PATHSERVER."game/showByUser" ?>">View user games</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="<?php echo PATHSERVER."game/showUnregisteredView" ?>">View user games</a></li>
                     <li class="nav-item"><a class="nav-link active" href="<?php echo PATHSERVER."about" ?>">About</a></li>
                     <li class="nav-item"><a class="nav-link active" href="<?php echo PATHSERVER."webs" ?>">Webs</a></li>
                     <li class="nav-item"><a class="nav-link active" href="http://msx.tipolisto.es" target="_blanck">msx.tipolisto.es</a></li>
@@ -70,9 +70,9 @@
 
 
             <!--Busqyeda de games -->     
-            <form class="d-flex" method=post action='<?php echo PATHSERVER; ?>"game/search' >
-                <input class="form-control me-2" type="search" name="search" id="search" placeholder="Search" aria-label="Search" disabled>
-                <button class="btn btn-outline-success" type="submit" name="submit" onclick="alert('disabled')" disabled>Search</button>
+            <form class="d-flex" method=post action='<?php echo PATHSERVER; ?>game/search' >
+                <input class="form-control me-2" type="search" name="search" id="search" placeholder="Search" aria-label="Search" >
+                <button class="btn btn-outline-success" type="submit" name="submit">Search</button>
             </form>
 
         </div><!--fin clase container fluid -->
@@ -97,13 +97,13 @@
                     <ol class='breadcrumb'>
                         <!--Estos enlaces van a la direccion http://www.gestorwebs.tipolisto.es/gestionarwebs.php?idCategoria=66 por ejemplo
                         Pero han sido sobreescritos con mod_rewrite del archivo .htacces fichero de configuración de apache-->
-                        <li class="breadcrumb-item"><a href='<?php echo PATHSERVER ?>game/showUser'>My Games</a></li>
+                        <li class="breadcrumb-item"><a href='<?php echo PATHSERVER ?>game/showByCategoriesUsers'>My Games</a></li>
                         <li class="breadcrumb-item"><a href='<?php echo PATHSERVER ?>game/insert'>New Game</a></li>
                         <li class="breadcrumb-item"><a href='<?php echo PATHSERVER ?>user/update'>My data</a></li>
                         <li class="breadcrumb-item"><a href='<?php echo PATHSERVER ?>database/show'>Database</a></li>
                         <li class="breadcrumb-item"><a href='<?php echo PATHSERVER ?>media/showAll'>Images</a></li>
                     </ol> 
-                    <form class="d-flex col-md-4" method=post action='<?php echo PATHSERVER; ?>game/search'>
+                    <form class="d-flex col-md-4" method=post action='<?php echo PATHSERVER; ?>game/searchUser'>
                         <input class="form-control" type="search" name="search" id="search" placeholder="Search your games" aria-label="search your games">
                         <button class="btn btn-outline-success" type="submit" name="submit">Search</button>
                     </form> 

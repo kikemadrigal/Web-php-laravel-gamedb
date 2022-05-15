@@ -8,7 +8,7 @@ CREATE TABLE `websGames` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
--- Drop table filesGames;
+-- Drop table websGames;
 
 
 

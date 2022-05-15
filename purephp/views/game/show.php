@@ -1,6 +1,8 @@
 <?php
+//Show.php permite visualizar los datos de un juego alamcenado en la tabla games
 //La variable idGame se obtiene en el index.php
-$game=GameUserRepository::getGame($idGame); 
+
+$game=GameRepository::getGame($idGame); 
 include_once("./views/templates/document-start.php"); 
 ?>
 <!-- Patrones: para campos con números: pattern='[0-9]{1,10000}'-->
@@ -15,21 +17,28 @@ include_once("./views/templates/document-start.php");
     <div class="col">
         <!--Obtener foto --> 
         <?php
-        if (!empty($game->getCover())) $image=MultimediaRepository::getImage($game->getCover());
-        if(empty($image) || $image==null || $image->getId()==1){
-            if(PRODUCTION==1){
-                echo "<img src='".PATHSERVERSININDEX."media/sinImagen.jpg' class='max-height300' /><br>";
+        if(PRODUCTION==1){
+            $path="./media/screenshots/".$game->getCover()."a.png";
+            if (file_exists($path)){
+                echo "<img class='img-fluid mx-4' src='".PATHSERVERSININDEX."media/screenshots/".$game->getCover()."a.png' class='max-height300' />&nbsp;&nbsp;";
+                echo "<img class='img-fluid mx-4' src='".PATHSERVERSININDEX."media/screenshots/".$game->getCover()."b.png' class='max-height300' /><br>";
             }else{
-                echo "<img src='".PATHSERVER."media/sinImagen.jpg' class='max-height300' /><br>";
+                echo "<img class='img-fluid mx-4' src='".PATHSERVERSININDEX."media/sinImagen.jpg' class='max-height300' />&nbsp;&nbsp;";
             }
+            echo "<h3><a href='".PATHSERVERSININDEX.">webmsx/index.html?disk=MSX2-C.dsk' target='_blanck'>Play online</a></h3>";
         }else{
-            if(PRODUCTION==1){
-                echo "<img src=".PATHSERVERSININDEX.$image->getPath()." class='max-height300' /><br>";
+            $path="./media/screenshots/".$game->getCover()."a.png";
+            if (file_exists($path)){
+                echo "<img class='img-fluid img-fluid mx-4'  src='".PATHSERVER."media/screenshots/".$game->getCover()."a.png' class='max-height300' />";
+                echo "<img class='img-fluid img-fluid mx-4'  src='".PATHSERVER."media/screenshots/".$game->getCover()."b.png' class='max-height300' /><br>";
             }else{
-                echo "<img src=".PATHSERVER.$image->getPath()." class='max-height300' /><br>";
+                echo "<img class='img-fluid mx-4' src='".PATHSERVER."media/sinImagen.jpg' class='max-height300' />&nbsp;&nbsp;";
             }
+            echo "<h3><a href='".PATHSERVER.">webmsx/index.html?disk=MSX2-C.dsk' target='_blanck'>Play online</a></h3>";
         }
-        ?>   
+        ?>  
+        
+        <p><a href="http://www.generation-msx.nl/msxdb/softwareinfo/<?php echo $game->getCover();?>">Generation-MSX: <?php echo $game->getCover();?></a></p> 
     </div>
 </div>
 

@@ -30,8 +30,8 @@ if (isset($_POST['submit'])){
     $game->setObservations($_POST['observations']);
     if ($game!=null){
         GameUserRepository::insert($game, $_SESSION['idusuario']);
-        header("location: ".PATHSERVER);
-        if ( PRODUCTION==1 ) echo "<script type='text/javascript'>location.href='".PATHSERVER."';</script>";
+        header("location: ".PATHSERVER."game/showByCategoriesUsers");
+        if ( PRODUCTION==1 ) echo "<script type='text/javascript'>location.href='".PATHSERVER."game/showByCategoriesUsers';</script>";
     }else{
         echo "Update could not be completed";  
     }

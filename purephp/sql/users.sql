@@ -28,7 +28,7 @@ CREATE TABLE `users` (
   UNIQUE KEY `ID` (`id`),
   PRIMARY KEY (`id`),
   FOREIGN KEY (`view`) REFERENCES viewsUsers(`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_spanish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_spanish_ci; 
 
 
 --

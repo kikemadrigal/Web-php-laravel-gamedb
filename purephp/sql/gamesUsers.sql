@@ -65,7 +65,8 @@ INSERT INTO `gamesUsers` (`id`, `title`, `cover`, `instructions`, `country`, `pu
 (27, 'Gridtrap', 31, '', '', 'Erbe', 'Livewire', 1985, '', '', 'MSX', '', '', '', '', '', 1, 1, 1, 1, 0, 0, '', 186),
 (28, 'Team Sanyo & Harvey Smith Showjumper', 34, '', '', 'Software Projects', 'Software Projects', 1985, 'tape cartridge', 'Arcade', 'MSX', '', '', '', '', '', 1, 1, 1, 1, 0, 1, '', 186),
 (29, 'MSX Software Nº12', 35, 'Estas al mando de un potente avión de combate, tu misión consiste en despegar de tu portaaviones y realizar una incursión aerea sobre una importante ciudad enemiga. Pero esta ciudad se encuentra a varios kilómetros en el interior del terrtorio enemigo, po', '', 'Grupo de Trabajo Software (G.T.S.)', 'Grupo de Trabajo Software (G.T.S.)', 1986, 'tape cartridge', '', 'MSX', '', '', '', '', '', 1, 1, 1, 1, 0, 1, '', 186),
-(30, 'Mr Wong', 36, 'Mr. Wong el lavandero además de recoger la ropa debe evitar la persecución del jabón, la plancha, etc, lanzando jabón', '', 'Sony Spain', 'Artic Computing', 1984, '', '', 'MSX', '', '', '', '', '', 1, 1, 1, 1, 0, 1, '', 186);
+(30, 'Mr Wong', 36, 'Mr. Wong el lavandero además de recoger la ropa debe evitar la persecución del jabón, la plancha, etc, lanzando jabón', '', 'Sony Spain', 'Artic Computing', 1984, 'Tape-high-quality ', '', 'MSX', '', '', '', '', '', 1, 1, 1, 1, 0, 1, '', 186),
+(31, 'Driller tank-tanque destructor', 37, 'Surgiendo de las profundidades, los hectorianos de aliento de fuego y sus ikedanies sin mente, está en movimiento. Sólo los tanques perforadores pueden evitar que invadan el palacio de verano. La batalla tiene lugar en el antiguo complejo de túneles bajo ', '', 'Sony Spain', 'Hudson Soft', 1984, 'tape cartridge', 'Action', 'MSX', '', '', '', '', '', 1, 1, 1, 1, 0, 0, '', 186);
 
 --
 

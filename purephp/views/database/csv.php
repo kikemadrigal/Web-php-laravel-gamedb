@@ -1,56 +1,54 @@
-<?php include_once("./views/templates/document-start.php");
-dibujarButtons();
-echo "<br><br>";
-$path="media/users/user".$_SESSION['idusuario']."/database.csv";
-$fp = fopen($path, 'w+');
-if(PRODUCTION==1){
-    echo "<a href='".PATHSERVERSININDEX.$path."' class='btn btn-outline-primary'>Download CSV file</a><br>";
-}else{
-    echo "<a href='".$path."' class='btn btn-outline-primary'>Download CSV file</a><br>";
-}
-$db= new MysqliClient();
-$db->conectar_mysql();
-$games=GameUserRepository::getAllGamesByUser($_SESSION['idusuario'],0,1000);
-$titles=array("id","title","cover","instructions","country","publisher","developer","year","format","genre","system","programming","sound","control","players","languages","file","screenshot","video","iGoIt","broken","observations");
-fputcsv($fp, $titles,";");
-foreach($games as $posicion=>$valor){
-    $string= $valor->toStringCSV();
-    $array=explode("\,",$string);
-    $string=str_replace("\,",",",$string);
-    echo "id"."   \t title  ".  " \t cover  "."  instructions  "."  country  "."  publisher  "."  developer  "."  year  "."  format  "."  genre  "."  system  "."  programming  "."  sound  "."  control  "."  players  "."  languages  "."  file  "."  screenshot  "."  video  "."  iGoIt  "."  broken  "."  observations"."<br>";
-    echo $string."<br>";
-    fputcsv($fp, $array,";");
-}
+<?php 
 /*
-$lista = array (array('a1','a2',10), array('b1','b2',20), array('c1','c2',30),array('d1','d2',40));
-$lista1 = array ('a  aa', 'bb  b', 1547, '   dddd');
-$lista2 = array ('aaa', 'bbb', 1547, 'dddd');
-$lista3 = array ('aaa', 'bbb', 1547, 'dddd');
-fputcsv($fp, $lista1,";");
-fputcsv($fp, $lista2,";");
-fputcsv($fp, $lista3,";");
-
-foreach($lista as $valor){
-    //Implode convierte un array en un string
-    $texto=implode($valor);
-    echo $texto.";";
+if (isset($partesRuta[3])){
+    $path="media/users/user".$_SESSION['idusuario']."/database.csv";
+    $zipFile="media/users/user".$_SESSION['idusuario']."/database.zip";
+    $zip = new ZipArchive();
+    $zip->open($zipFile, ZipArchive::CREATE);
+    if (is_file($zipfile)) {
+        $zip->addFile($path, $zipfile);
+    }else{
+        echo "zip no generado";
+    }
+    $zip->close();
+   header('Content-Type: application/zip');
+    header('Content-disposition: attachment; filename='.$zipFile);
+    header('Content-Length: ' . filesize($zipFile));
+    readfile($zipFile);
+    
 }
-echo "<br>";
 */
-fclose($fp);
-function dibujarButtons(){
-    ?>
-    <a href='<?php echo PATHSERVER ?>database/show' class='btn btn-outline-primary btn-lg '>TXT</a>
-    <a href="<?php echo PATHSERVER ?>database/csv" class="btn btn-outline-secondary btn-lg active">CSV</a>
-    <a href="<?php echo PATHSERVER ?>database/mysql" class="btn btn-outline-success btn-lg" >MYSQL</a>
-    <a href="" class="btn btn-outline-danger btn-lg">sqlite</a>
-    <a href=""  class="btn btn-outline-warning btn-lg">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
-    <a href=""  class="btn btn-outline-info btn-lg">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
-    <a href=""  class="btn btn-outline-dark btn-lg">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>
-    <?php
+include_once("./views/templates/document-start.php");
+$active=array();
+//Llena un array con num entradas del valor del parámetro value, las keys inician en el parámetro start_index.
+//array_fill(int $start_index, int $num, mixed $value): array
+//https://www.php.net/manual/es/function.array-fill
+$active=array_fill(0,4,"");
+$active[1]="active";
+include_once("./views/templates/barDatabase.php");
+FilesManager::createDirectoryTreeDatabase($_SESSION['idusuario']);
+$path="media/users/user".$_SESSION['idusuario']."/database/database.csv";
+$pathZipFile="media/users/user".$_SESSION['idusuario']."/database/database.zip";
+
+//Obtenemos todos los juegos de un usuario
+$games=GameUserRepository::getAllGamesByUser($_SESSION['idusuario'],0,1000);
+//Encabezado del archivo CSV
+$titles=array("id","title","cover","instructions","country","publisher","developer","year","format","genre","system","programming","sound","control","players","languages","file","screenshot","video","web","iGoIt","broken","observations");
+$fail=FilesManager::createCSVFile($path,$games,$titles);
+if($fail){
+    echo "Not found $path o $pathZipFile";
+}
+FilesManager::crearZip($path, $pathZipFile, StringManager::getLastWordFromPath($path));
+
+if(PRODUCTION==1){
+   echo "<a href='".PATHSERVERSININDEX.$pathZipFile."' class='btn btn-outline-primary'>Download CSV.zip file</a><br>";
+   echo "<a href='".PATHSERVERSININDEX.$path."' class='btn btn-outline-primary'>Download CSV file</a><br>";
+}else{
+    echo "<a href='".PATHSERVER.$pathZipFile."' class='btn btn-outline-primary'>Download CSV.zip file</a><br>";
+    echo "<a href='".PATHSERVER.$path."' class='btn btn-outline-primary'>Download CSV file</a><br>";
 }
 
-
-
+$content=FilesManager::read_File($path);
+echo $content;
 
 include_once("./views/templates/document-end.php");?>

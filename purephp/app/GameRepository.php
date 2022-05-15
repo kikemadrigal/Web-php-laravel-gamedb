@@ -78,19 +78,93 @@ public static function getAll($start, $end){
 	return $games;
 }
 
-/**
- * Esta función aparece en views/game/show
- */
-public static function getById($id){
-	$game=null;
+public static function getAllByLetter($letter,$start, $end){
+	$games=array();
 	$basededatos= new MysqliClient();
 	$basededatos->conectar_mysql();
-	$consulta  = "SELECT * FROM games WHERE id='$id' LIMIT 1";
+	$consulta  = "SELECT * FROM games WHERE title LIKE '".$letter."%' ORDER BY title limit ".$start .", ".$end."";
 	$resultado=$basededatos->ejecutar_sql($consulta);
 	while ($linea = mysqli_fetch_array($resultado)) 
 	{
 		$game=new Game($linea['id']);
 		$game->setTitle($linea['title']);
+		$game->setCover($linea['cover']);
+		$game->setInstructions($linea['instructions']);
+		$game->setCountry($linea['country']);
+		$game->setPublisher($linea['publisher']);
+		$game->setDeveloper($linea['developer']);
+		$game->setYear($linea['year']);
+		$game->setFormat($linea['format']);
+		$game->setGenre($linea['genre']);
+		$game->setSystem($linea['system']);
+		$game->setProgramming($linea['programming']);
+		$game->setSound($linea['sound']);
+		$game->setControl($linea['control']);
+		$game->setPlayers($linea['players']);
+		$game->setLanguages($linea['languages']);
+		$game->setFile($linea['file']);
+		$game->setScreenshot($linea['screenshot']);
+		$game->setVideo($linea['video']);
+		$game->setWeb($linea['web']);
+		$game->setIGoIt($linea['iGoIt']);
+		$game->setBroken($linea['broken']);
+		$game->setObservations($linea['observations']);
+		$games[]=$game;
+	}
+	$basededatos->desconectar();
+	return $games;
+}
+public static function getAllNumbersTittles($start, $end){
+	$games=array();
+	$basededatos= new MysqliClient();
+	$basededatos->conectar_mysql();
+	$consulta  = "SELECT * FROM games WHERE title REGEXP '^[0-9]+$'  ORDER BY title limit ".$start .", ".$end."";
+	$resultado=$basededatos->ejecutar_sql($consulta);
+	while ($linea = mysqli_fetch_array($resultado)) 
+	{
+		$game=new Game($linea['id']);
+		$game->setTitle($linea['title']);
+		$game->setCover($linea['cover']);
+		$game->setInstructions($linea['instructions']);
+		$game->setCountry($linea['country']);
+		$game->setPublisher($linea['publisher']);
+		$game->setDeveloper($linea['developer']);
+		$game->setYear($linea['year']);
+		$game->setFormat($linea['format']);
+		$game->setGenre($linea['genre']);
+		$game->setSystem($linea['system']);
+		$game->setProgramming($linea['programming']);
+		$game->setSound($linea['sound']);
+		$game->setControl($linea['control']);
+		$game->setPlayers($linea['players']);
+		$game->setLanguages($linea['languages']);
+		$game->setFile($linea['file']);
+		$game->setScreenshot($linea['screenshot']);
+		$game->setVideo($linea['video']);
+		$game->setWeb($linea['web']);
+		$game->setIGoIt($linea['iGoIt']);
+		$game->setBroken($linea['broken']);
+		$game->setObservations($linea['observations']);
+		$games[]=$game;
+	}
+	$basededatos->desconectar();
+	return $games;
+}
+
+/**
+ * Esta función aparece en views/game/show
+ */
+public static function getGame($idGame){
+	$game=null;
+	$basededatos= new MysqliClient();
+	$basededatos->conectar_mysql();
+	$consulta  = "SELECT * FROM games WHERE id='$idGame' LIMIT 1 ";
+	$resultado=$basededatos->ejecutar_sql($consulta);
+	while ($linea = mysqli_fetch_array($resultado)) 
+	{
+		$game=new Game($linea['id']);
+		$game->setTitle($linea['title']);
+		$game->setCover($linea['cover']);
 		$game->setInstructions($linea['instructions']);
 		$game->setCountry($linea['country']);
 		$game->setPublisher($linea['publisher']);
@@ -114,6 +188,42 @@ public static function getById($id){
 	}
 	$basededatos->desconectar();
 	return $game;
+}
+public static function getSearchGameByTitle($search){
+	$games=array();
+	$basededatos= new MysqliClient();
+	$basededatos->conectar_mysql();
+	$consulta  = "SELECT * FROM games WHERE title LIKE '%".$search."%' LIMIT 100";
+	$resultado=$basededatos->ejecutar_sql($consulta);
+	while ($linea = mysqli_fetch_array($resultado)) 
+	{
+		$game=new Game($linea['id']);
+		$game->setTitle($linea['title']);
+		$game->setCover($linea['cover']);
+		$game->setInstructions($linea['instructions']);
+		$game->setCountry($linea['country']);
+		$game->setPublisher($linea['publisher']);
+		$game->setDeveloper($linea['developer']);
+		$game->setYear($linea['year']);
+		$game->setFormat($linea['format']);
+		$game->setGenre($linea['genre']);
+		$game->setSystem($linea['system']);
+		$game->setProgramming($linea['programming']);
+		$game->setSound($linea['sound']);
+		$game->setControl($linea['control']);
+		$game->setPlayers($linea['players']);
+		$game->setLanguages($linea['languages']);
+		$game->setFile($linea['file']);
+		$game->setScreenshot($linea['screenshot']);
+		$game->setVideo($linea['video']);
+		$game->setWeb($linea['web']);
+		$game->setIGoIt($linea['iGoIt']);
+		$game->setBroken($linea['broken']);
+		$game->setObservations($linea['observations']);
+		$games[]=$game;
+	}
+	$basededatos->desconectar();
+	return $games;
 }
 
 /*
@@ -474,6 +584,10 @@ function aplicarActualizacionPadreCategoria($idCategoria){
 }
 
 */
+
+
+//Insert
+//INSERT INTO gamesUsers VALUES ( '', 'title', 'Cover', 'Instructions', 'Country()', 'Publisher', 'Developer', 'Year', 'Format', 'Genre', 'System', 'Programming', 'Sound', 'Control', '1', 'Languages', '1', '1', '1', '1', '1', '1' , 'observations', '92');
 
 	public static function delete($id){
 		$bd= new MysqliClient();

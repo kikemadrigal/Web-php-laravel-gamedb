@@ -2,3 +2,4 @@ purephp/app/env.php
 purephp/media/users
 purephp/media/users/
 purephp/media/users/*.*
+purephp/media/screenshots/*.*

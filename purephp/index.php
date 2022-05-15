@@ -26,6 +26,8 @@ session_start();
 include_once("./app/env.php");
 
 require_once('./app/Util.php');
+require_once('./app/StringManager.php');
+require_once('./app/FilesManager.php');
 include_once("./app/Game.php");
 include_once("./app/FileGame.php");
 include_once("./app/ScreenShotGame.php");
@@ -35,6 +37,7 @@ include_once("./app/FileGameRepository.php");
 include_once("./app/ScreenShotGameRepository.php");
 include_once("./app/VideoGameRepository.php");
 include_once("./app/WebGameRepository.php");
+include_once("./app/RegisterValidator.php");
 
 require_once('./app/GameRepository.php');
 require_once('./app/GameUserRepository.php');
@@ -43,7 +46,12 @@ require_once("./app/UserRepository.php");
 include_once("./app/MultimediaRepository.php");
 include_once("./app/Multimedia.php");
 include_once("./app/MysqliClient.php");
+include_once("./app/SQLiteClient.php");
+include_once("./app/PdoSQLiteClient.php");
+include_once("./app/PdoMySQLClient.php");
 include_once("./app/ViewsUsersRepository.php");
+
+
 
 
 
@@ -62,23 +70,29 @@ $partesRuta=explode("/", $ruta);
 /***********************************
 *               GAME 
 ***********************************/  
-
 if($partesRuta[1]=="game"){
-    //Permite visualizar los datos de un juego
+    //Permite visualizar los datos de un juego alamcenado en la tabla games
     if($partesRuta[2]=="show"){
         if (isset($partesRuta[3])) $idGame=$partesRuta[3];
         include_once("views/game/show.php");
-    //Muestra en una vistas elegidas por el usuario los games
+    //Muestra los datos del juego almacenado en la tabla usersgames
     }else if($partesRuta[2]=="showUser"){
+        if (isset($partesRuta[3])) $idGame=$partesRuta[3];
+        include_once("views/game/showUser.php");
+    //Muestra en una vistas elegidas por el usuario los juegos de la tabla usersgames
+    }else if($partesRuta[2]=="showByCategoriesUsers"){
         if(isset($_SESSION['idusuario']) && $_SESSION['nivelaccesousuario']==3){
-            include_once("views/game/showUser.php");
+            include_once("views/game/showByCategoriesUsers.php");
         }
-    //Permite visalizar los juegos de los uaurios dados de alta
-    }else if($partesRuta[2]=="showByUser"){
-        include_once("views/game/showByUser.php");
+    //Muestra una vista especial para seleccionar usuarios y ver todos sus juegos
+    }else if($partesRuta[2]=="showUnregisteredView"){
+        include_once("views/game/showUnregisteredView.php");
     }else if($partesRuta[2]=="search"){
         $search=$_POST['search'];
         include_once("views/game/search.php"); 
+    }else if($partesRuta[2]=="searchUser"){
+        $search=$_POST['search'];
+        include_once("views/game/searchUser.php"); 
     //Acurdate que el formulario de insertar en la action debe de ponerse insert
     }else if($partesRuta[2]=="insert"){
         if(isset($_SESSION['idusuario']) && $_SESSION['nivelaccesousuario']==1){
@@ -86,26 +100,16 @@ if($partesRuta[1]=="game"){
         }else if(isset($_SESSION['idusuario']) && $_SESSION['nivelaccesousuario']==3){
             include_once("views/game/insertUser.php");
         }
-    }else if($partesRuta[2]=="insertFile"){
-        $idGame=$_POST['idGame'];
-        include_once("views/game/insertFile.php");
-        $idGame=$_POST['idGame'];
-    }else if($partesRuta[2]=="insertScreenShot"){
-        include_once("views/game/insertScreenShot.php");
-    }else if($partesRuta[2]=="insertVideo"){
-        $idGame=$_POST['idGame'];
-        $text=$_POST['text'];
-        include_once("views/game/insertVideo.php");
-    }else if($partesRuta[2]=="insertWeb"){
-        $idGame=$_POST['idGame'];
-        $text=$_POST['text'];
-        include_once("views/game/insertWeb.php");
     }else if($partesRuta[2]=="update"){
-        if (isset($_POST['id'])){
-            $idGame=$_POST['id'];
-        }else{
+        if (isset($_POST['idGame'])) $idGame=$_POST['idGame'];
+        else{
             $idGame=$partesRuta[3];
         }
+        if (isset($_POST['text'])) $text=$_POST['text'];
+        if (isset($_POST['idFileGame'])) $idFileGame=$_POST['idFileGame'];
+        if (isset($_POST['idScreenShotGame'])) $idScreenShotGame=$_POST['idScreenShotGame'];
+        if (isset($_POST['idVideoGame'])) $idVideoGame=$_POST['idVideoGame'];
+        if (isset($_POST['idWebGame'])) $idWebGame=$_POST['idWebGame'];
         if(isset($_SESSION['idusuario']) && $_SESSION['nivelaccesousuario']==1){
             include_once("views/game/update.php");
         }else if(isset($_SESSION['idusuario']) && $_SESSION['nivelaccesousuario']==3){
@@ -118,22 +122,8 @@ if($partesRuta[1]=="game"){
         }else if(isset($_SESSION['idusuario']) && $_SESSION['nivelaccesousuario']==3){
             include_once("views/game/deleteUser.php");
         }
-    }else if($partesRuta[2]=="deleteFile"){
-        $idGame=$_POST['idGame'];
-        $idFileGame=$_POST['idFileGame'];
-        include_once("views/game/deleteFile.php");
-    }else if($partesRuta[2]=="deleteScreenShot"){
-        $idGame=$_POST['idGame'];
-        $idScreenShotGame=$_POST['idScreenShotGame'];
-        include_once("views/game/deleteScreenShot.php");
-    }else if($partesRuta[2]=="deleteVideo"){
-        $idGame=$_POST['idGame'];
-        $idVideoGame=$_POST['idVideoGame'];
-        include_once("views/game/deleteVideo.php");
-    }else if($partesRuta[2]=="deleteWeb"){
-        $idGame=$_POST['idGame'];
-        $idWebGame=$_POST['idWebGame'];
-        include_once("views/game/deleteWeb.php");
+    }else {
+        include_once("views/404.php");
     }
 /***********************************
 *          END GAME
@@ -168,6 +158,8 @@ else if($partesRuta[1]=="register"){
 else if($partesRuta[1]=="user"){
     if($partesRuta[2]=="update"){
         include_once("views/user/update.php");
+    }else {
+        include_once("views/404.php");
     }
 }
 /***********************************
@@ -188,17 +180,16 @@ else if($partesRuta[1]=="media"){
     }else if($partesRuta[2]=="delete"){
         $idMedia=$_POST['id'];
         include_once("views/media/delete.php");   
+    }else {
+        include_once("views/404.php");
     }
 }
 /***********************************
 *               END MULTIMEDIA 
 ***********************************/  
 else if($partesRuta[1]=="home"){
-    if(isset($_SESSION['idusuario']) && $_SESSION['nivelaccesousuario']==3){
-        include_once("views/game/showUser.php");
-    }else{
-        include_once("views/home.php");
-    }
+    if (isset($partesRuta[2])) $letter=$partesRuta[2];
+    include_once("views/home.php");
 }else if($partesRuta[1]=="about"){
     include_once("views/about.php");
 }else if($partesRuta[1]=="webs"){
@@ -213,20 +204,19 @@ else if($partesRuta[1]=="home"){
         include_once("views/database/mysql.php");
     }else if($partesRuta[2]=="csv"){
         include_once("views/database/csv.php");
+    }else if($partesRuta[2]=="sqlite"){
+        include_once("views/database/sqlite.php");
+    }else {
+        include_once("views/404.php");
     }
 /***********************************
 *               END DATABASE 
 ***********************************/  
 }else if($partesRuta[1]==""){
-    if(isset($_SESSION['idusuario']) && $_SESSION['nivelaccesousuario']==3){
-        include_once("views/game/showUser.php");
-    }else{
-        include_once("views/home.php");
-    }
-}
-else {
-    echo "Error 404<br>";
-    var_dump($partesRuta);
+    if (isset($partesRuta[2])) $letter=$partesRuta[2];
+    include_once("views/home.php");
+}else {
+    include_once("views/404.php");
 }
 
 
